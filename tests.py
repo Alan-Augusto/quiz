@@ -96,3 +96,22 @@ def test_create_choice_text_too_long():
     q = Question('q')
     with pytest.raises(Exception):
         q.add_choice('a'*101, False)
+
+# FIXTURES E NOVOS TESTES
+@pytest.fixture
+def question_with_choices():
+    q = Question("q", max_selections=2)
+    c1 = q.add_choice("a", is_correct=True)
+    c2 = q.add_choice("b", is_correct=False)
+    c3 = q.add_choice("c", is_correct=True)
+    return q, c1, c2, c3
+
+def test_select_choices_from_fixture(question_with_choices):
+    q, c1, c2, c3 = question_with_choices
+    result = q.select_choices([c1.id, c3.id])  # apenas 2, respeitando o max_selections
+    assert result == [c1.id, c3.id]
+
+def test_set_correct_choices_fixture(question_with_choices):
+    q, c1, c2, c3 = question_with_choices
+    q.set_correct_choices([c2.id])
+    assert c2.is_correct
